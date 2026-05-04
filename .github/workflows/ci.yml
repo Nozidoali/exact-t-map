@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-22.04, cc: gcc,   cxx: g++ }
+          - { os: ubuntu-22.04, cc: clang, cxx: clang++ }
+          - { os: ubuntu-24.04, cc: gcc,   cxx: g++ }
+          - { os: ubuntu-24.04, cc: clang, cxx: clang++ }
+          - { os: macos-13,     cc: clang, cxx: clang++ }
+          - { os: macos-14,     cc: clang, cxx: clang++ }
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ${{ matrix.cc }}
+
+      - name: Install toolchain (macOS)
+        if: runner.os == 'macOS'
+        run: brew install cmake
+
+      - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build -j
+
+      - name: Smoke test (map a small Verilog)
+        run: |
+          mkdir -p out
+          ./build/exact-t-synth -n 5 --cut-size 4 \
+            -o out/maj3.qasm benchmarks/correctness/maj3.v
+          test -s out/maj3.qasm
+          grep -q "qreg q" out/maj3.qasm
+          echo "T-count: $(grep -c '^t \|^tdg ' out/maj3.qasm)"

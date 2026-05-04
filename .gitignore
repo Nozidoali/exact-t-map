@@ -1,0 +1,5 @@
+build/
+build-debug/
+results/
+__pycache__/
+*.qasm
