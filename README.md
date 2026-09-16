@@ -1,4 +1,10 @@
+<p align="center">
+  <img src="docs/assets/logo.svg" width="128" height="128" alt="Exact T Map logo">
+</p>
+
 # Quantum Circuit Synthesis Using an Exact T Library
+
+Part of the [High-Level Quantum Circuit Synthesis Toolkit](https://github.com/Nozidoali/q-hls).
 
 [![CI](https://github.com/Nozidoali/exact-t-map/actions/workflows/ci.yml/badge.svg)](https://github.com/Nozidoali/exact-t-map/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
